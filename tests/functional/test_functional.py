@@ -192,3 +192,9 @@ def test_bot_reply_with_alias_message(driver):
     driver.wait_for_bot_channel_message("hello sender!", tosender=True)
     driver.send_channel_message('!hello', tobot=False, colon=False)
     driver.wait_for_bot_channel_message("hello sender!", tosender=True)
+
+def test_bot_ignores_direct_messages_when_ignore_direct_messages_is_set(driver):
+    driver.send_direct_message('hello_no_direct')
+    driver.wait_for_bot_direct_message("Sorry, can't do that from a direct message")
+    driver.send_channel_message("hello_no_direct", tobot=True)
+    driver.wait_for_bot_channel_message('Hello no direct!')

@@ -7,6 +7,7 @@ import requests
 from contextlib import contextmanager
 from six.moves import _thread, range, queue
 import six
+from functools import wraps
 
 logger = logging.getLogger(__name__)
 
@@ -76,3 +77,19 @@ class WorkerPool(object):
         while True:
             msg = self.queue.get()
             self.func(msg)
+
+
+def ignore_direct_message(fn):
+    """
+    Decorator declaring the wrapped function to the default reply hanlder.
+
+    May be invoked as a simple, argument-less decorator (i.e. ``@default_reply``) or
+    with arguments customizing its behavior (e.g. ``@default_reply(matchstr='pattern')``).
+    """
+    @wraps(fn)
+    def wrapper(message, *args, **kwargs):
+        if not message.channel._body.get("is_im"):
+            return fn(message, *args, **kwargs)
+        logger.info("Ignoring direct message from %s", message._body.get("user"))
+        message.reply("Sorry, can't do that from a direct message")
+    return wrapper

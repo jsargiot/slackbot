@@ -52,3 +52,8 @@ def hey(message):
 @respond_to(u'你好')
 def hello_unicode_message(message):
     message.reply(u'你好!')
+
+
+@respond_to('hello_no_direct', ignore_direct_messages=True)
+def hello_no_direct(message):
+    message.reply('Hello no direct!')

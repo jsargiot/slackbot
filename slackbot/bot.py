@@ -11,6 +11,7 @@ from slackbot import settings
 from slackbot.manager import PluginsManager
 from slackbot.slackclient import SlackClient
 from slackbot.dispatcher import MessageDispatcher
+from slackbot.utils import ignore_direct_message
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +44,10 @@ class Bot(object):
             self._client.ping()
 
 
-def respond_to(matchstr, flags=0):
+def respond_to(matchstr, flags=0, ignore_direct_messages=False):
     def wrapper(func):
+        if ignore_direct_messages:
+            func = ignore_direct_message(func)
         PluginsManager.commands['respond_to'][
             re.compile(matchstr, flags)] = func
         logger.info('registered respond_to plugin "%s" to "%s"', func.__name__,
